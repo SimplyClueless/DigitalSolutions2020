@@ -1,3 +1,3 @@
-fPounds = float(input("Enter the weight you would like to convert to Kilograms: "))
+Pounds = float(input("Enter the weight you would like to convert to Kilograms: "))
 
-print(fPounds * 0.454)
+print("Your weight in Pounds converts to:", Pounds * 0.454, "Kilograms")
