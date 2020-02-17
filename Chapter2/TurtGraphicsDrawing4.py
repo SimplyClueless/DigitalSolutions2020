@@ -1,0 +1,32 @@
+import turtle
+turtle.showturtle()
+turtle.speed(10)
+
+turtle.penup()
+turtle.goto(0, -50)
+turtle.pendown()
+turtle.circle(50)
+turtle.penup()
+turtle.goto(0, 0)
+turtle.pendown()
+for x in range (4):
+    turtle.forward(100)
+    turtle.left(90)
+    turtle.penup()
+    turtle.goto(0, 0)
+    turtle.pendown()
+
+turtle.penup()
+turtle.goto(100, 0)
+turtle.write("East")
+turtle.left(90)
+turtle.goto(0, 100)
+turtle.write("North")
+turtle.left(90)
+turtle.goto(-100, 0)
+turtle.write("West")
+turtle.left(90)
+turtle.goto(0, -100)
+turtle.write("South")
+
+turtle.done()
