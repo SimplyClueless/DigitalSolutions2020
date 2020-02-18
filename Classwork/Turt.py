@@ -197,4 +197,3 @@ turtle.pendown()
 star(150, 7)
 
 turtle.done()
-
