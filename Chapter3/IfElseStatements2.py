@@ -1,37 +1,16 @@
 month: int = int(input("Enter your number: "))
 
-if month == 1:
+if month >= 0:
     print("First Quarter")
 
-if month == 2:
-    print("First Quarter")
-
-if month == 3:
-    print("First Quarter")
-
-if month == 4:
+if month >= 3:
     print("Second Quarter")
 
-if month == 5:
-    print("Second Quarter")
-
-if month == 6:
-    print("Second Quarter")
-
-if month == 7:
+if month >= 6:
     print("Third Quarter")
 
-if month == 8:
-    print("Third Quarter")
-
-if month == 9:
-    print("Third Quarter")
-
-if month == 10:
+if month >= 9:
     print("Fourth Quarter")
 
-if month == 11:
-    print("Fourth Quarter")
-
-if month == 12:
-    print("Fourth Quarter")
+else:
+    print("ERROR")
