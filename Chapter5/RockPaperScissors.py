@@ -28,3 +28,5 @@ def Scoring(Player, AI):
             print("AI wins!")
         if AI == 2:
             print("Game tied!")
+
+Scoring(PlayerInput, AIInput)
