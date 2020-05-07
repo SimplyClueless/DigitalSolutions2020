@@ -16,7 +16,7 @@ def RandomiseCard():
     CardNumber3 = CardList[2]
     CardNumber4 = CardList[3]
     CardList.remove(CardNumber1)
-    CardList.remove(CardNumber2)
+    CardList.remove(CardNumber2)PYH
     CardList.remove(CardNumber3)
     CardList.remove(CardNumber4)
 
