@@ -52,8 +52,6 @@ def Main():
     s = snake((255, 0, 0), (10, 10))
     flag = True
 
-    
-
     while flag:
         pygame.time.delay(50)
         clock.tick(10)
