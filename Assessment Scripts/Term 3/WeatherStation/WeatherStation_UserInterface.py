@@ -85,16 +85,16 @@ def SQLQuerySelection():
     '''
     sortingText = Text(dataButtonContainer, text="Sort By:", grid=[0, 1], align="top")
     tempSortButton = PushButton(dataButtonContainer, text="Temperature (min - max)", grid=[0, 2], align="top",
-                                 command=lambda: SQLQueriesExecution("""SELECT Date, Time, Temp, Humid, Press FROM WeatherData ORDER BY Temp ASC", 
-                                                                    "Date, Time, Temperature, Humidity, Pressure"""))
+                                 command=lambda: SQLQueriesExecution("SELECT Date, Time, Temp, Humid, Press FROM WeatherData ORDER BY Temp ASC", 
+                                                                    "Date, Time, Temperature, Humidity, Pressure"))
     tempSortButton.width = 20; tempSortButton.height = 5; tempSortButton.bg = "White"
     humidSortButton = PushButton(dataButtonContainer, text="Humidity (min - max)", grid=[1, 2], align="top",
-                                 command=lambda: SQLQueriesExecution("""SELECT Date, Time, Temp, Humid, Press FROM WeatherData ORDER BY Humid ASC", 
-                                                                     "Date, Time, Temperature, Humidity, Pressure"""))
+                                 command=lambda: SQLQueriesExecution("SELECT Date, Time, Temp, Humid, Press FROM WeatherData ORDER BY Humid ASC", 
+                                                                     "Date, Time, Temperature, Humidity, Pressure"))
     humidSortButton.width = 20; humidSortButton.height = 5; humidSortButton.bg = "White"
     pressSortButton = PushButton(dataButtonContainer, text="Pressure (min - max)", grid=[2, 2], align="top",
-                                 command=lambda: SQLQueriesExecution("""SELECT Date, Time, Temp, Humid, Press FROM WeatherData ORDER BY Press ASC",
-                                                                     "Date, Time, Temperature, Humidity, Pressure"""))
+                                 command=lambda: SQLQueriesExecution("SELECT Date, Time, Temp, Humid, Press FROM WeatherData ORDER BY Press ASC",
+                                                                     "Date, Time, Temperature, Humidity, Pressure"))
     pressSortButton.width = 20; pressSortButton.height = 5; pressSortButton.bg = "White"
     # dateInput = TextBox(dataButtonContainer, grid=[1, 1], align="top")
     # dateInput.bg = "White"
@@ -143,7 +143,7 @@ def CreateTempGraph():
     plt.clf()
     
     graphWindow = Window(app, title="Temperature Graph")
-    graphWindow.width = 650; graphWindow.height = 500;
+    graphWindow.width = 650; graphWindow.height = 500
     
     record = connection.execute("SELECT * FROM WeatherData")
     for row in record:
@@ -174,7 +174,7 @@ def CreateHumidGraph():
     plt.clf()
     
     graphWindow = Window(app, title="Humidity Graph")
-    graphWindow.width = 650; graphWindow.height = 500;
+    graphWindow.width = 650; graphWindow.height = 500
     
     record = connection.execute("SELECT * FROM WeatherData")
     for row in record:
@@ -205,7 +205,7 @@ def CreatePressGraph():
     plt.clf()
     
     graphWindow = Window(app, title="Pressure Graph")
-    graphWindow.width = 650; graphWindow.height = 500;
+    graphWindow.width = 650; graphWindow.height = 500
     
     record = connection.execute("SELECT * FROM WeatherData")
     for row in record:
@@ -249,7 +249,7 @@ def LiveCollection(cycles):
         localCycles = int(cycles)
         liveDataList = ListBox(liveWindow)
         imageContainer = Box(liveWindow, layout="grid", grid=[1, 0], align="top", border=True)
-        imageContainer.border = 10;
+        imageContainer.border = 10
         liveTempImage = Picture(imageContainer)
         liveHumidImage = Picture(imageContainer)
         livePressImage = Picture(imageContainer)
