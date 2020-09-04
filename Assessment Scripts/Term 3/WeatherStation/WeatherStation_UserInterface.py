@@ -52,13 +52,13 @@ def MainPage():
     Runs LiveCollection function passing through the number of cycles to complete the displayed time on the button
     Doesn't get any return variables
     '''
-    hrs48Button = PushButton(liveContainer, text="48 Hours...", grid=[0, 0], align="top", command=lambda: LiveCollection(2880))
+    hrs48Button = PushButton(liveContainer, text="48 Hours...", grid=[0, 0], align="top", command=lambda: LiveCollection(17280))
     hrs48Button.width = 10; hrs48Button.height = 5; hrs48Button.bg = "White"
-    hrs24Button = PushButton(liveContainer, text="24 Hours...", grid=[1, 0], align="top", command=lambda: LiveCollection(1440))
+    hrs24Button = PushButton(liveContainer, text="24 Hours...", grid=[1, 0], align="top", command=lambda: LiveCollection(8640))
     hrs24Button.width = 10; hrs24Button.height = 5; hrs24Button.bg = "White"
-    hrs12Button = PushButton(liveContainer, text="12 Hours...", grid=[3, 0], align="top", command=lambda: LiveCollection(720))
+    hrs12Button = PushButton(liveContainer, text="12 Hours...", grid=[3, 0], align="top", command=lambda: LiveCollection(4320))
     hrs12Button.width = 10; hrs12Button.height = 5; hrs12Button.bg = "White"
-    hrs1Button = PushButton(liveContainer, text="1 Hours...", grid=[4, 0], align="top", command=lambda: LiveCollection(60))
+    hrs1Button = PushButton(liveContainer, text="1 Hours...", grid=[4, 0], align="top", command=lambda: LiveCollection(360))
     hrs1Button.width = 10; hrs1Button.height = 5; hrs1Button.bg = "White"
     customButton = PushButton(mainWindow, text="Custom Time...", grid=[0, 8], align="top", command=CustomLiveCollection)
     customButton.width = 15; customButton.height = 5; customButton.bg = "White"
