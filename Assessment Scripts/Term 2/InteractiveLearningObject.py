@@ -1,6 +1,43 @@
+import os
 import random
-from PIL import Image
+import PIL
 from guizero import App, Picture, PushButton, Window, Text, TextBox, Box
+
+class cards:
+    cardList = []
+    gameRun = 0
+    playerOnePoints = 0
+    playerTwoPoints = 0
+    addedScoresPlayerOne = 0
+    addedScoresPlayerTwo = 0
+
+    def __init__(self, cardNumber, suit):
+        self.cardNumber = self.randomCard()
+        self.suit = suit
+
+    @classmethod
+    def shuffleCards(cls):
+        clubs, diamonds, hearts, spades = list(range(1, 14)); 
+        cls.cardList = [["Clubs", clubs], ["Diamonds", diamonds], ["Hearts", hearts], ["Spades", spades]]
+        for i in range(len(cls.cardList)):
+            random.shuffle(cls.cardList[i][1])
+
+    @classmethod
+    def resetValues(cls):
+        cls.gameRun = 0
+        cls.playerOnePoints = 0
+        cls.playerTwoPoints = 0
+        cls.addedScoresPlayerOne = 0
+        cls.addedScoresPlayerTwo = 0
+
+    def randomCard(self, suit):
+        if (len(cls.cardList[suit][1]) == 0):
+            while (len(cls.cardList[suit][1]) == 0):
+                suit = random.randint(0, 3)
+        cardNumber = cls.cardList[suit][1][0]
+        del cls.cardList[suit][1][0]
+
+        return cardNumber
 
 app = App()
 app.hide()
@@ -8,14 +45,6 @@ app.hide()
 isOnePlayer = None
 isGameAddition = None
 
-'''
-This function is executed at the start of the code and creates startWindow, the main menu for the game.
-buttonOnePlayer and buttonTwoPlayer both call the same function SetPlayerNumber, but passes through a boolean and a- 
-string to set global variables. Doesn't return any values.
-buttonAddition and buttonSubtraction both call the same function SetGameMode, but passes through a boolean and a string- 
-to set global variables. Doesn't return any values.
-Doesn't return any variables.
-'''
 def Run():
     global startWindow
     global finalCheck
@@ -47,12 +76,6 @@ def Run():
     startButton = PushButton(finalCheck, text="Start!", grid=[0, 2], align="top", command=StartGame)
     startButton.width = 20; startButton.height = 5; startButton.bg = "White"; startButton.disable()
 
-'''
-Takes passed through variables playerBool & playerString and sets a global variable and string depending on the passed- 
-through variables.
-Calls function EnableStartButton.
-Doesn't return any variables.
-'''
 def SetPlayerNumber(playerBool, playerString):
     global isOnePlayer
 
@@ -61,12 +84,6 @@ def SetPlayerNumber(playerBool, playerString):
 
     EnableStartButton()
 
-'''
-Takes passed through variables gameModeBool & gameModeString and sets a global variable and string depending on the-
-passed through variables.
-Calls function EnableStartButton.
-Doesn't return any variables.
-'''
 def SetGameMode(gameModeBool, gameModeString):
     global isGameAddition
 
@@ -75,11 +92,6 @@ def SetGameMode(gameModeBool, gameModeString):
 
     EnableStartButton()
 
-'''
-Check if the variables isOnePlayer & isGameAddition are equal to nothing and if they have a value then activate a-
-button created in the Run function.
-Doesn't return any variables.
-'''
 def EnableStartButton():
     global startButton
     global isOnePlayer
@@ -90,27 +102,6 @@ def EnableStartButton():
     else:
         startButton.enable()
 
-'''
-Creates 4 lists with integers going from 1 - 13 and then places then in a seperate multidimensional list along with a- 
-string based on the different suits.
-Shuffles the seperate indexes of the list so the cards are drawn randomly.
-Returns the list variable cardList.
-'''
-def ShuffleCards():
-    global cardList
-
-    clubs = list(range(1, 14)); diamonds = list(range(1, 14)); hearts = list(range(1, 14)); spades = list(range(1, 14))
-    cardList = [["Clubs", clubs], ["Diamonds", diamonds], ["Hearts", hearts], ["Spades", spades]]
-    for i in range(len(cardList)):
-        random.shuffle(cardList[i][1])
-    # print(cardList)
-    return cardList
-
-'''
-Checks to see if the cardList index is empty. If it is empty then try and find a different suit that isn't empty.
-Sets the cardNumber variables and suit variables then deletes the index so that duplicates cannot occur.
-Returns cardNumber & suit.
-'''
 def RandomCard(suit):
     global cardList
 
@@ -119,15 +110,9 @@ def RandomCard(suit):
             suit = random.randint(0, 3)
     cardNumber = cardList[suit][1][0]
     del cardList[suit][1][0]
-    # print(cardList)
-    return cardNumber, suit
 
-'''
-Closes the startWindow created in the Run function.
-Sets the variables to their starting values and a function depending on how many players have been chosen-
-(StartOnePlayer & StartTwoPlayer).
-Doesn't return any variables.
-'''
+    card = cards(cardNumber, suit)
+
 def StartGame():
     global gameRun
     global playerOnePoints
@@ -138,13 +123,8 @@ def StartGame():
 
     startWindow.hide()
 
-    gameRun = 0
-    playerOnePoints = 0
-    playerTwoPoints = 0
-    addedScoresPlayerOne = 0
-    addedScoresPlayerTwo = 0
-
-    ShuffleCards()
+    cards.resetValues()
+    cards.shuffleCards()
 
     if isOnePlayer == True:
         StartOnePlayer()
@@ -152,12 +132,7 @@ def StartGame():
         StartTwoPlayer()
 
 #---Begin One Player---#
-'''
-Creates onePlayerWindow.
-drawButtonOnePlayer calls function ButtonSwapOnePlayer which doesn't have any parameters.
-guessCheckButtonOnePlayer calls function CheckValuesOnePlayer which doesn't have any parameters.
-Doesn't return any variables.
-'''
+
 def StartOnePlayer():
     global onePlayerWindow
     global drawButtonOnePlayer
@@ -188,12 +163,6 @@ def StartOnePlayer():
     errorTextOnePlayer = Text(onePlayerWindow, text="Please enter a number!", grid=[0, 4])
     errorTextOnePlayer.hide()
 
-'''
-Disables drawButtonOnePlayer so the player cannot continually draw cards from the deck.
-Enables guessTextBoxOnePlayer and clears any values previously in it so players can input their answer.
-Enables guessCheckButtonOnePlayer so they can run the function to check their answers.
-Doesn't return any variables.
-'''
 def ButtonSwapOnePlayer():
     OnePlayer()
     drawButtonOnePlayer.disable()
@@ -201,24 +170,19 @@ def ButtonSwapOnePlayer():
     guessTextBoxOnePlayer.clear()
     guessCheckButtonOnePlayer.enable()
 
-'''
-Assigns a random number ranging from 0 - 3 to the variables suit1 and suit2.
-Assigns the return value of the function RandomCard to cardNumber1 and suit1 with the passed parameter of suit1.
-Assigns the return value of the function RandomCard to cardNumber2 and suit2 with the passed parameter or suit2.
-Checks if the gameMode is addition or subtraction and does the required equation to the 2 cardNumber variables.
-Displays cardImage1 and cardImage2 depending on the suit string from the cardList and the cardNumber variables.
-Doesn't return any variables.
-'''
 def OnePlayer():
     global suit1
     global suit2
     global isGameAddition
     global addedScoresPlayerOne
 
+    card1 = cards()
+    card2 = cards()
+
     suit1 = random.randint(0, 3); suit2 = random.randint(0, 3)
     # print("First suit is " + str(suit1)); print("Second suit is " + str(suit2))
 
-    cardNumber1, suit1 = RandomCard(suit1); cardNumber2, suit2 = RandomCard(suit2)
+    card1.randomCard(); cardNumber2, suit2 = RandomCard(suit2)
     # print("first card is " + str(cardNumber1)); print("second card is " + str(cardNumber2))
     # print("CardnNumber1 suit number is " + str(suit1)); print("CardNumber2 suit number is " + str(suit2))
 
@@ -233,14 +197,6 @@ def OnePlayer():
     cardImage2 = Picture(cardImagesOnePlayer, image="PlayingCards/" + str(cardList[suit2][0]) + "/" + str(cardNumber2) + ".png", grid=[1, 0])
     cardImage2.width = 144; cardImage2.height = 192
 
-'''
-Checks if the guessTextBoxOnePlayer value is empty or not a number. If true then display and error message.
-Checks if the addedScoresPlayerOne variable is or isn't equal to the guessTextBoxOnePlayer value and then calls the- 
-ScoresOnePlayer function with a different string and integer parameter.
-If the variables gameRun is equal to 26 then run the function EndScreens as 26 is the maximum number of times the- 
-player should be allowed to draw.
-Doesn't return any variables.
-'''
 def CheckValuesOnePlayer():
     global playerOnePoints
     global gameRun
@@ -257,15 +213,6 @@ def CheckValuesOnePlayer():
     if (gameRun == 26):
         EndScreens()
 
-'''
-Enables drawButtonOnePlayer so the player can draw another hand of cards from the deck.
-Disables guessCheckButtonOnePlayer so the player can't continually gain points from the same answer.
-Displays correctOnePlayer with the string parameter passed when calling the function.
-Adds the passed through integer to the playerOnePoints variable then displays playerOnePointsText showing the-
-playerOnePoints variable.
-Increments the variables gameRun by 1.
-Doesn't return any variables.
-'''
 def ScoresOnePlayer(outcome, addedPoints):
     global correctOnePlayer
     global playerOnePoints
@@ -280,12 +227,6 @@ def ScoresOnePlayer(outcome, addedPoints):
     gameRun += 1
     playerOnePointsText = Text(guessContainerOnePlayer, text=playerOnePoints, grid=[1, 2])
 
-'''
-Creates endOnePlayerWindow.
-Displays how many points the player got out of the maximum points that could have gotten.
-restartButton calls the function RestartGame which... restarts the game.
-Doesn't return any variables.
-'''
 def EndScreenOnePlayer():
     global endOnePlayerWindow
     global playerOnePoints
@@ -311,12 +252,6 @@ def EndScreenOnePlayer():
 
 #---Begin Two Player---#
 
-'''
-Creates twoPlayerWindow
-drawButtonTwoPlayer calls function ButtonSwapTwoPlayer which doesn't have any parameters.
-guessCheckButtonTwoPlayer calls the function CheckValuesTwoPlayer which doesn't have any parameters.
-Doesn't return any variables.
-'''
 def StartTwoPlayer():
     global twoPlayerWindow
     global drawButtonTwoPlayer
@@ -361,13 +296,6 @@ def StartTwoPlayer():
     errorTextTwoPlayer = Text(twoPlayerWindow, text="Please Enter a Number!", grid=[0, 4])
     errorTextTwoPlayer.hide()
 
-'''
-Disables drawButtonTwoPlayer so the player cannot continually draw cards from the deck.
-Enables guessTextBoxTwoPlayer1 and guessTextBoxTwoPlayer2 and clear any values previously in them so players can input-
-their answers.
-Enables guessCheckButtonTwoPlayer so they can run the function to check their answers.
-Doesn't return any variables.
-'''
 def ButtonSwapTwoPlayer():
     TwoPlayer()
     drawButtonTwoPlayer.disable()
@@ -377,18 +305,6 @@ def ButtonSwapTwoPlayer():
     guessTextBoxTwoPlayer2.clear()
     guessCheckButtonTwoPlayer.enable()
 
-'''
-Assigns a random number ranging from 0 - 3 to the variables suit1, suit2, suit3 and suit4.
-Assigns the return values of the function RandomCard to cardNumber1 and suit1 with the passed parameter of suit1.
-Assigns the return values of the function RandomCard to cardNumber2 and suit2 with the passed parameter of suit2.
-Assigns the return values of the function RandomCard to cardNumber3 and suit3 with the passed parameter of suit3.
-Assigns the return values of the function RandomCard to cardNumber4 and suit4 with the passed parameter of suit4.
-Checks if the gameMode is addition or subtraction and does the required equation to the 2 cardNumber variables assigned-
-to each player.
-Displays cardImage1, cardImage2, cardImage3 and cardImage4 depending on the suit string from the cardList and the- 
-cardNumber variables.
-Doesn't return any variables.
-'''
 def TwoPlayer():
     global suit1
     global suit2
@@ -428,17 +344,6 @@ def TwoPlayer():
     cardImage4 = Picture(cardImagesTwoPlayer2, image="PlayingCards/" + str(cardList[suit4][0]) + "/" + str(cardNumber4) + ".png", grid=[4, 0])
     cardImage4.width = 144; cardImage4.height = 192
 
-'''
-Checks if the guessTextBoxTwoPlayer1 or guessTextBoxTwoPlayer2 values is empty or not equal to a number. If true then-
-display an error message.
-Checks if the addedScoresPlayerOne variable is or isn't equal to the guessTextBoxTwoPlayer1 values and then calls the-
-ScoresTwoPlayer1 function with a different string and integer parameter.
-Checks if the addedScoresPlayerTwo variable is or isn't equal to the guessTextBoxTwoPlayer2 values and then calls the-
-ScoresTwoPlayer2 function with a different string and integer parameter.
-If the variables gameRun is equal to 26 then run the function EndScreens as 26 is the maximum number of cards each-
-player should be allowed to draw.
-Doesn't return any variables.
-'''
 def CheckValuesTwoPlayer():
     global playerOnePoints
     global playerTwoPoints
@@ -464,15 +369,6 @@ def CheckValuesTwoPlayer():
     if (gameRun == 26):
         EndScreens()
 
-'''
-Enables drawButtonTwoPlayer so the players can draw another hand of cards from the deck.
-Disables guessCheckButtonTwoPlayer so the players can't continually gain points from the same answers.
-Displays correctTwoPlayer1 with the string parameter passed when calling the function.
-Adds the passed through integer to playerOnePoints variables then displays playerOnePointsText showing the-
-playerOnePoints variable.
-Increments the variable gameRun by 1
-Doesn't return any variables.
-'''
 def ScoresTwoPlayer1(outcome, addedPoints):
     global correctTwoPlayer1
     global playerOnePoints
@@ -487,15 +383,6 @@ def ScoresTwoPlayer1(outcome, addedPoints):
     gameRun += 1
     playerTwoPointsText1 = Text(guessContainerTwoPlayer1, text=playerOnePoints, grid=[1, 2])
 
-'''
-Enables drawButtonTwoPlayer so the players can draw another hand of cards from the deck.
-Disables guessCheckButtonTwoPlayer so the players can't continually gain points from the same answers.
-Displays correctTwoPlayer2 with the string parameter passed when calling the function.
-Adds the passed through integer to playerTwoPoints variables then displays playerTwoPointsText showing the-
-playerTwoPoints variable.
-Increments the variable gameRun by 1.
-Doesn't return any variables.
-'''
 def ScoresTwoPlayer2(outcome, addedPoints):
     global correctTwoPlayer2
     global playerTwoPoints
@@ -510,12 +397,6 @@ def ScoresTwoPlayer2(outcome, addedPoints):
     gameRun += 1
     playerTwoPointsText2 = Text(guessContainerTwoPlayer2, text=playerTwoPoints, grid=[1, 2])
 
-'''
-Creates endTwoPlayerWindow.
-Displays how many points each player got out of the maximum points they could have gotten.
-restartButton calls the function RestartGame which... restarts the game.
-Doesn't return any variables.
-'''
 def EndScreenTwoPlayer():
     global endTwoPlayerWindow
     global playerOnePoints
@@ -559,10 +440,6 @@ def EndScreenTwoPlayer():
 
 #---End Two Player
 
-'''
-Checks how many players there are and calls the respective end game function.
-Doesn't return any variables.
-'''
 def EndScreens():
     global isOnePlayer
 
@@ -573,11 +450,6 @@ def EndScreens():
         twoPlayerWindow.hide()
         EndScreenTwoPlayer()
 
-'''
-Calls the function run to restart the game.
-Checks how many players there are and closes the respective end game window.
-Doesn't return any variables.
-'''
 def RestartGame():
     global endOnePlayerWindow
     global endTwoPlayerWindow
