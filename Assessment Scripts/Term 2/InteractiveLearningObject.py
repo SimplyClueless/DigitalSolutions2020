@@ -21,7 +21,7 @@ def Run():
     playerButtonContainer = Box(startWindow, layout="grid", grid=[0, 1], align="top", border=True)
     playerButtonContainer.set_border(10, "Lime")
     buttonOnePlayer = PushButton(playerButtonContainer, text="1 Player", grid=[1, 0], command=lambda: SetPlayerNumber(True, "1 Player"))
-    buttonOnePlayer.width = 20; buttonOnePlayer.height = 10; buttonOnePlayer.bg = "White";
+    buttonOnePlayer.width = 20; buttonOnePlayer.height = 10; buttonOnePlayer.bg = "White"
     buttonTwoPlayer = PushButton(playerButtonContainer, text="2 Player", grid=[2, 0], command=lambda: SetPlayerNumber(False, "2 Player"))
     buttonTwoPlayer.width = 20; buttonTwoPlayer.height = 10; buttonTwoPlayer.bg = "White"
 
