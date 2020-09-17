@@ -8,14 +8,12 @@ cam.set(3, 1280)
 cam.set(4, 720)
 
 font = cv2.FONT_HERSHEY_SCRIPT_COMPLEX
-
 fourcc = cv2.VideoWriter_fourcc(*'XVID')
-
 
 out = cv2.VideoWriter('output.avi', fourcc, 30, (1280, 720))
 
 while True:
-    ret, img = cam.read()
+    img = cam.read()
 
     img = cv2.flip(img, 4)
     cv2.putText(img, "You are being recorded", (300, 400), font, 2, (0, 83 ,207), 2, cv2.LINE_AA)
@@ -27,5 +25,6 @@ while True:
     k = cv2.waitKey(3) & 0xff
     if k == 27:
         break
+
 cam.release()
 cv2.destroyAllWindows()
