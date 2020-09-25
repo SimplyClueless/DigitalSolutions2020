@@ -16,7 +16,7 @@ while True:
     ret, img = cam.read()
 
     img = cv2.flip(img, 4)
-    cv2.putText(img, "You are being recorded", (300, 400), font, 2, (0, 83 ,207), 2, cv2.LINE_AA)
+    cv2.putText(img, "You're a faggot", (400, 100), font, 2, (0, 83 ,207), 2, cv2.LINE_AA)
     cv2.putText(img, str(datetime.now()), (1000, 700), font, .5, (255, 255, 255), 1, cv2.LINE_AA)
     cv2.imshow('Security Camera', img)
 

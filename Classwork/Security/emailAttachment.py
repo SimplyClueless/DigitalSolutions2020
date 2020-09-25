@@ -16,16 +16,23 @@ msg["From"] = email
 msg["To"] = sendToEmail
 msg["Subject"] = subject
 
-msg.attach(MIMEText(message, "plain"))
+msg.attach(MIMEText(message, "plain", "utf-8"))
 
 filename = os.path.basename(fileLocation)
 with open(fileLocation, "rb") as file:
-    attachment = file.read()
-part = MIMEBase("application", "octet-stream")
-part.set_payload(attachment)
-part.add_header("Content-Disposition", "attachment; filename=%s" % filename)
+    # set attachment mime and file name, the image type is png
+    mime = MIMEBase('image', 'png', filename='img1.png')
 
-msg.attach(part)
+    # add required header data:
+    mime.add_header('Content-Disposition', 'attachment', filename='img1.png')
+    mime.add_header('X-Attachment-Id', '0')
+    mime.add_header('Content-ID', '<0>')
+
+    # read attachment file content into the MIMEBase object
+    mime.set_payload(file.read())
+
+    # add MIMEBase object to MIMEMultipart object
+    msg.attach(mime)
 
 server = smtplib.SMTP("smtp.gmail.com", 587)
 server.starttls()
