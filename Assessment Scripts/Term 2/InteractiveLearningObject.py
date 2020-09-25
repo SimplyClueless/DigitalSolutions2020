@@ -14,7 +14,7 @@ def Run():
     global startButtons
 
     startWindow = Window(app, title="Starting Screen", layout="grid")
-    startWindow.width = 360; startWindow.hseight = 630; startWindow.bg = "Lime"
+    startWindow.width = 360; startWindow.height = 630; startWindow.bg = "Lime"
 
     playersQuestionText = Text(startWindow, text="How Many Players?", grid=[0, 0], align="top")
     playersQuestionText.text_size = 25
