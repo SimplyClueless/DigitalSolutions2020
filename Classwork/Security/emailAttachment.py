@@ -24,7 +24,9 @@ with open(filename, "rb") as file:
     part.set_payload(file.read())
 encoders.encode_base64(part)
 
-part.add_header("Content-Disposition", f"attachment; filename= {filename}")
+directoryIndex = filename.rindex("/")
+attachmentName = filename[directoryIndex:]
+part.add_header("Content-Disposition", f"attachment; filename= {attachmentName}")
 
 msg.attach(part)
 message = msg.as_string()
