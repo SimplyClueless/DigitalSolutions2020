@@ -1,42 +1,36 @@
 import os
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
+import smtplib, ssl
+from email import encoders
 from email.mime.base import MIMEBase
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from tkinter import filedialog
 
-fileLocation = 'C:\\Users\\benja\\Documents\\Github\\DigitalSolutions2020\\Classwork\\Security\\Capture.png'
 email = "sheldoncollegeiot@gmail.com"
 password = "P@ssword#1"
 sendToEmail = "s06442@sheldoncollege.com"
-subject = "Benjamin Bristow"
-message = "Hi this is a message"
 
 msg = MIMEMultipart()
+msg["Subject"] = "Benjamin Bristow"
 msg["From"] = email
 msg["To"] = sendToEmail
-msg["Subject"] = subject
 
-msg.attach(MIMEText(message, "plain", "utf-8"))
+text = "Hi this is a message"
+msg.attach(MIMEText(text, "plain"))
 
-filename = os.path.basename(fileLocation)
-with open(fileLocation, "rb") as file:
-    # set attachment mime and file name, the image type is png
-    mime = MIMEBase('image', 'png', filename='img1.png')
+filename = filedialog.askopenfilename(initialdir = "/", title = "Select Attachment File", filetypes=[("All", "*.*")])
+with open(filename, "rb") as file:
+    part = MIMEBase("application", "octet-stream")
+    part.set_payload(file.read())
+encoders.encode_base64(part)
 
-    # add required header data:
-    mime.add_header('Content-Disposition', 'attachment', filename='img1.png')
-    mime.add_header('X-Attachment-Id', '0')
-    mime.add_header('Content-ID', '<0>')
+part.add_header("Content-Disposition", f"attachment; filename= {filename}")
 
-    # read attachment file content into the MIMEBase object
-    mime.set_payload(file.read())
+msg.attach(part)
+message = msg.as_string()
 
-    # add MIMEBase object to MIMEMultipart object
-    msg.attach(mime)
-
-server = smtplib.SMTP("smtp.gmail.com", 587)
-server.starttls()
-server.login(email, password)
-text = msg.as_string()
-server.sendmail(email, sendToEmail, text)
-server.quit()
+context = ssl.create_default_context()
+with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
+    server.login(email, password)
+    server.sendmail(email, sendToEmail, message)
+    server.quit()

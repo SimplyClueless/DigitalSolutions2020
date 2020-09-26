@@ -7,7 +7,7 @@ import time
 
 email = "sheldoncollegeiot@gmail.com"
 password = "P@ssword#1"
-sendToEmail = "s06442@sheldoncollege.com"#; s05913@sheldoncollege.com; s05755@sheldoncollege.com; s08940@sheldoncollege.com; sheldoncollegeiot@gmail.com"
+sendToEmail = ""#; s05913@sheldoncollege.com; s05755@sheldoncollege.com; s08940@sheldoncollege.com; sheldoncollegeiot@gmail.com"
 subject = "Benjamin Bristow"
 message = """Greetings friends!\n 
         This is a message sent from me cause I'm cool!\n
@@ -27,11 +27,9 @@ server.starttls() # Transport layer service = encryption protocol
 server.login(email, password) # Login to sender email server
 text = msg.as_string() # Attach message to variable
 
-x = 0
-while x < 2:
+while True:
     server.sendmail(email, sendToEmail, text)
     print("Sent", x)
     time.sleep(1)
-    x += 1
 
 server.quit()
