@@ -20,3 +20,4 @@ print(MyList)
 print(min(MyList))
 print(max(MyList))
 
+print("weee")
