@@ -8,7 +8,6 @@ from picamera import PiCamera
 import os
 import time
 from time import strftime, gmtime
-from subprocess import call
 
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
@@ -89,14 +88,17 @@ class Buzzer:
     
     def Beep(self, delay):
         GPIO.output(self.buzzer, GPIO.HIGH)
+        print("Beep")
         time.sleep(delay)
         GPIO.output(self.buzzer, GPIO.LOW)
+        print("No Beep")
         time.sleep(delay)
 
 email = Email("sheldoncollegeiot@gmail.com", "P@ssword#1", "s06442@sheldoncollege.com", "Benjamin Bristow")
 camera = Camera()
 ultrasonic = Ultrasonic(18, 24)
 buzzer = Buzzer(23)
+videoFile = "roomCapture.h264"
 
 def Alarm(delay):
     currentTime = time.strftime("%H:%M:%S", time.localtime())
@@ -104,7 +106,7 @@ def Alarm(delay):
     text = f"Your motion sensor has been activated at {currentTime} {currentDate}"
     email.msg.attach(MIMEText(text, "plain"))
 
-    camera.camera.start_recording("roomCapture.h264")
+    camera.camera.start_recording(videoFile)
 
     while (delay >= 0.0):
         buzzer.Beep(delay)
@@ -112,13 +114,11 @@ def Alarm(delay):
         
     camera.camera.stop_recording()
 
-    command = "MP4Box -add roomCapture.h264 roomCapture.mp4"
-    call([command], shell=True)
-    email.SendFile("roomCapture.mp4")
+    email.SendFile(videoFile)
 
 while True:
     distance = ultrasonic.Distance()
     print ("Measured Distance = %.1f cm" % distance)
-    if (distance <= 20.0):
+    if (distance <= 100.0):
         Alarm(1)
     time.sleep(0.1)
