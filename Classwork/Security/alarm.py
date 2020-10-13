@@ -10,6 +10,9 @@ import time
 from time import strftime, gmtime
 from subprocess import call
 
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BCM)
+
 class Email:
     def __init__(self, email, password, sendToEmail, subject):
         self.email = email
@@ -22,8 +25,8 @@ class Email:
         self.msg["From"] = self.email
         self.msg["To"] = self.sendToEmail
 
-    def SendFile():
-        filename = "roomCapture.mp4"
+    def SendFile(self, file):
+        filename = file
         with open(filename, "rb") as file:
             part = MIMEBase("application", "octet-stream")
             part.set_payload(file.read())
@@ -31,13 +34,13 @@ class Email:
 
         part.add_header("Content-Disposition", f"attachment; filename= {filename}")
 
-        msg.attach(part)
-        message = msg.as_string()
+        self.msg.attach(part)
+        message = self.msg.as_string()
 
         context = ssl.create_default_context()
         with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
-            server.login(email, password)
-            server.sendmail(email, sendToEmail, message)
+            server.login(self.email, self.password)
+            server.sendmail(self.email, self.sendToEmail, message)
             server.quit()
 
         print("File Sent")
@@ -54,25 +57,23 @@ class Ultrasonic:
         self.trigger = trigger
         self.echo = echo
 
-        GPIO.setwarnings(False)
-        GPIO.setmode(GPIO.BCM)
-        GPIO_TRIGGER = self.trigger
-        GPIO.setup(GPIO_TRIGGER, GPIO.OUT)
-        GPIO_ECHO = self.echo
-        GPIO.setup(GPIO_ECHO, GPIO.IN)
+        self.GPIO_TRIGGER = self.trigger
+        GPIO.setup(self.GPIO_TRIGGER, GPIO.OUT)
+        self.GPIO_ECHO = self.echo
+        GPIO.setup(self.GPIO_ECHO, GPIO.IN)
 
-    def Distance():
-        GPIO.output(GPIO_TRIGGER, True)
+    def Distance(self):
+        GPIO.output(self.GPIO_TRIGGER, True)
         time.sleep(0.00001)
-        GPIO.output(GPIO_TRIGGER, False)
+        GPIO.output(self.GPIO_TRIGGER, False)
 
         StartTime = time.time()
         StopTime = time.time()
 
-        while GPIO.input(GPIO_ECHO) == 0:
+        while GPIO.input(self.GPIO_ECHO) == 0:
             StartTime = time.time()
 
-        while GPIO.input(GPIO_ECHO) == 1:
+        while GPIO.input(self.GPIO_ECHO) == 1:
             StopTime = time.time()
 
         TimeElapsed = StopTime - StartTime
@@ -86,10 +87,10 @@ class Buzzer:
 
         GPIO.setup(self.buzzer, GPIO.OUT)
     
-    def Beep(delay):
-        GPIO.output(buzzer, GPIO.HIGH)
+    def Beep(self, delay):
+        GPIO.output(self.buzzer, GPIO.HIGH)
         time.sleep(delay)
-        GPIO.output(buzzer, GPIO.LOW)
+        GPIO.output(self.buzzer, GPIO.LOW)
         time.sleep(delay)
 
 email = Email("sheldoncollegeiot@gmail.com", "P@ssword#1", "s06442@sheldoncollege.com", "Benjamin Bristow")
@@ -98,24 +99,22 @@ ultrasonic = Ultrasonic(18, 24)
 buzzer = Buzzer(23)
 
 def Alarm(delay):
-    print("Alarm Triggered")
     currentTime = time.strftime("%H:%M:%S", time.localtime())
-    currentDate = time.strftime("%d:%m:%Y", gmtime())
+    currentDate = time.strftime("%d/%m/%Y", gmtime())
     text = f"Your motion sensor has been activated at {currentTime} {currentDate}"
-    msg.attach(MIMEText(text, "plain"))
+    email.msg.attach(MIMEText(text, "plain"))
 
-    camera.start_recording("roomCapture.h264")
+    camera.camera.start_recording("roomCapture.h264")
 
     while (delay >= 0.0):
-        print(delay)
         buzzer.Beep(delay)
         delay -= 0.02
         
-    camera.stop_recording()
+    camera.camera.stop_recording()
 
     command = "MP4Box -add roomCapture.h264 roomCapture.mp4"
     call([command], shell=True)
-    SendFile()
+    email.SendFile("roomCapture.mp4")
 
 while True:
     distance = ultrasonic.Distance()
