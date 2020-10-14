@@ -119,6 +119,6 @@ def Alarm(delay):
 while True:
     distance = ultrasonic.Distance()
     print ("Measured Distance = %.1f cm" % distance)
-    if (distance <= 100.0):
+    if (distance <= 20.0):
         Alarm(1)
     time.sleep(0.1)
