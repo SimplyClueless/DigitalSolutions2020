@@ -41,7 +41,7 @@ class Ultrasonic:
         
         return distance
 
-ultrasonic = Ultrasonic(22, 27)
+ultrasonic = Ultrasonic(18, 24)
 
 while True:
     distance = ultrasonic.Distance()    
