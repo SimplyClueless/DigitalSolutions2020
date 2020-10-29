@@ -1,62 +1,124 @@
+import smtplib, ssl
+from email import encoders
+from email.mime.base import MIMEBase
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 import RPi.GPIO as GPIO
+from picamera import PiCamera
+import os
 import time
+from time import strftime, gmtime
 
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
-GPIO_TRIGGER = 18
-GPIO_ECHO = 24
-buzzer = 23
 
-GPIO.setup(GPIO_TRIGGER, GPIO.OUT)
-GPIO.setup(GPIO_ECHO, GPIO.IN)
-GPIO.setup(buzzer,GPIO.OUT)
+class Email:
+    def __init__(self, email, password, sendToEmail, subject):
+        self.email = email
+        self.password = password
+        self.sendToEmail = sendToEmail
+        self.subject = subject
 
-c = [32, 65, 131, 262, 523]
-db= [34, 69, 139, 277, 554]
-d = [36, 73, 147, 294, 587]
-eb= [37, 78, 156, 311, 622]
-e = [41, 82, 165, 330, 659]
-f = [43, 87, 175, 349, 698]
-gb= [46, 92, 185, 370, 740]
-g = [49, 98, 196, 392, 784]
-ab= [52, 104, 208, 415, 831]
-a = [55, 110, 220, 440, 880]
-bb= [58, 117, 223, 466, 932]
-b = [61, 123, 246, 492, 984]
+        self.msg = MIMEMultipart()
+        self.msg["Subject"] = self.subject
+        self.msg["From"] = self.email
+        self.msg["To"] = self.sendToEmail
 
-megalovaniaNotes = [d[2], d[2], d[3], a[2], ab[2], g[2], f[2], d[2], f[2], g[2]] 
-megalovaniaBeats = [0.25, 0.25, 0.5, 0.5, 0.25, 0.25, 0.5, 0.25, 0.25, 0.25]
+    def SendFile(self, file):
+        filename = file
+        with open(filename, "rb") as file:
+            part = MIMEBase("application", "octet-stream")
+            part.set_payload(file.read())
+        encoders.encode_base64(part)
 
-def Distance():
-    GPIO.output(GPIO_TRIGGER, True)
-    time.sleep(0.00001)
-    GPIO.output(GPIO_TRIGGER, False)
+        part.add_header("Content-Disposition", f"attachment; filename= {filename}")
 
-    StartTime = time.time()
-    StopTime = time.time()
+        self.msg.attach(part)
+        message = self.msg.as_string()
 
-    while GPIO.input(GPIO_ECHO) == 0:
+        context = ssl.create_default_context()
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
+            server.login(self.email, self.password)
+            server.sendmail(self.email, self.sendToEmail, message)
+            server.quit()
+
+        print("File Sent")
+
+class Camera:
+    def __init__(self):
+        self.camera = PiCamera()
+        self.camera.resolution = (640, 480)
+        self.camera.framerate = 24
+        self.camera.rotation = 180
+
+class Ultrasonic:
+    def __init__(self, trigger, echo):
+        self.trigger = trigger
+        self.echo = echo
+
+        self.GPIO_TRIGGER = self.trigger
+        GPIO.setup(self.GPIO_TRIGGER, GPIO.OUT)
+        self.GPIO_ECHO = self.echo
+        GPIO.setup(self.GPIO_ECHO, GPIO.IN)
+
+    def Distance(self):
+        GPIO.output(self.GPIO_TRIGGER, True)
+        time.sleep(0.00001)
+        GPIO.output(self.GPIO_TRIGGER, False)
+
         StartTime = time.time()
-
-    while GPIO.input(GPIO_ECHO) == 1:
         StopTime = time.time()
 
-    TimeElapsed = StopTime - StartTime
-    distance = (TimeElapsed * 34300) / 2
+        while GPIO.input(self.GPIO_ECHO) == 0:
+            StartTime = time.time()
+
+        while GPIO.input(self.GPIO_ECHO) == 1:
+            StopTime = time.time()
+
+        TimeElapsed = StopTime - StartTime
+        distance = (TimeElapsed * 34300) / 2
+        
+        return distance
+
+class Buzzer:
+    def __init__(self, buzzer):
+        self.buzzer = buzzer
+
+        GPIO.setup(self.buzzer, GPIO.OUT)
     
-    return distance
+    def Beep(self, delay):
+        GPIO.output(self.buzzer, GPIO.HIGH)
+        print("Beep")
+        time.sleep(delay)
+        GPIO.output(self.buzzer, GPIO.LOW)
+        print("No Beep")
+        time.sleep(delay)
 
-def Alarm(notes, beats, tempo):
-    pass
+email = Email("sheldoncollegeiot@gmail.com", "P@ssword#1", "s06442@sheldoncollege.com", "Benjamin Bristow")
+camera = Camera()
+ultrasonic = Ultrasonic(18, 24)
+buzzer = Buzzer(23)
+videoFile = "roomCapture.h264"
 
-try:
-    while True:
-        distance = Distance()
-        print ("Measured Distance = %.1f cm" % distance)
-        if (distance <= 20.0):
-            Alarm()
-        time.sleep(0.1)
+def Alarm(delay):
+    currentTime = time.strftime("%H:%M:%S", time.localtime())
+    currentDate = time.strftime("%d/%m/%Y", gmtime())
+    text = f"Your motion sensor has been activated at {currentTime} {currentDate}"
+    email.msg.attach(MIMEText(text, "plain"))
 
-except KeyboardInterrupt:
-    print("Measurement stopped by User")
-    GPIO.cleanup()
+    camera.camera.start_recording(videoFile)
+
+    while (delay >= 0.0):
+        buzzer.Beep(delay)
+        delay -= 0.02
+        
+    camera.camera.stop_recording()
+
+    email.SendFile(videoFile)
+
+while True:
+    distance = ultrasonic.Distance()
+    print ("Measured Distance = %.1f cm" % distance)
+    if (distance <= 100.0):
+        Alarm(1)
+    time.sleep(0.1)
