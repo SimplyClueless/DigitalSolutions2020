@@ -17,7 +17,9 @@ def Alarm(delay):
     camera.Record(60)
     buzzer.Off()
 
-    email.SendFile(text, videoFile)
+    email.AttachText(text)
+    email.AttachFile(videoFile)
+    email.SendEmail()
 
 Alarm(1)
 
