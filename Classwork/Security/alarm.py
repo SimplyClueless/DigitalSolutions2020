@@ -8,7 +8,7 @@ ultrasonic = Ultrasonic(22, 27)
 buzzer = Buzzer(17)
 videoFile = "roomCapture.avi"
 
-def Alarm(delay):
+def Alarm():
     currentTime = time.strftime("%H:%M:%S", time.localtime())
     currentDate = time.strftime("%d/%m/%Y", gmtime())
     text = f"Your motion sensor has been activated at {currentTime} {currentDate}"
@@ -21,7 +21,7 @@ def Alarm(delay):
     email.AttachFile(videoFile)
     email.SendEmail()
 
-Alarm(1)
+Alarm()
 
 """
 while True:
