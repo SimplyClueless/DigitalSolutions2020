@@ -11,8 +11,10 @@ import cv2
 import numpy as np
 from datetime import datetime
 
+#from sense_hat import SenseHat
+
 # GPIO modules
-import RPi.GPIO as GPIO
+#import RPi.GPIO as GPIO
 
 # Other modules
 import time
@@ -29,9 +31,22 @@ class Email:
         self.msg["From"] = self.email
         self.msg["To"] = self.sendToEmail
 
-    def SendFile(self, text, file):
+    def SendEmail(self):
+        context = ssl.create_default_context()
+        self.message = self.msg.as_string()
+        print(self.email)
+        print(self.password)
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
+            server.login(self.email, self.password)
+            server.sendmail(self.email, self.sendToEmail, self.message)
+            server.quit()
+
+        print("Email Sent!")
+
+    def AttachText(self, text):
         self.msg.attach(MIMEText(text, "plain"))
 
+    def AttachFile(self, file):
         filename = file
         with open(filename, "rb") as file:
             part = MIMEBase("application", "octet-stream")
@@ -41,18 +56,6 @@ class Email:
         part.add_header("Content-Disposition", f"attachment; filename= {filename}")
 
         self.msg.attach(part)
-        message = self.msg.as_string()
-
-        context = ssl.create_default_context()
-        print(self.email)
-        print(self.password)
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
-            server.login(self.email, self.password)
-            server.sendmail(self.email, self.sendToEmail, message)
-            server.quit()
-
-        os.remove(filename)
-        print("File Sent")
 
 class Camera:
     def __init__(self):
@@ -74,7 +77,7 @@ class Camera:
             self.img = cv2.flip(self.img, 0)
             cv2.putText(self.img, "You're being recorded", (400, 100), self.font, 2, (0, 83 ,207), 2, cv2.LINE_AA)
             cv2.putText(self.img, str(datetime.now()), (1000, 700), self.font, .5, (255, 255, 255), 1, cv2.LINE_AA)
-            cv2.imshow('Security Camera', self.img)
+            cv2.imshow('Security Camera', self.iSmg)
 
             self.out.write(self.img)
             tick += 1
@@ -82,6 +85,22 @@ class Camera:
 
         self.cam.release()
         cv2.destroyAllWindows()
+
+
+class RPSenseHatS:
+    pass
+    #def Accelerometer(self):
+     #   red = (255, 0, 0)
+#
+ #       acceleration = sense.get_accelerometer_raw()
+  #      x = acceleration["x"]
+   #     y = acceleration["y"]
+    #    z = acceleration["z"]
+#
+ #       x = abs(x)
+  #      y = abs(y)
+   #     z = abs(z)
+
 
 class Ultrasonic:
     def __init__(self, trigger, echo):
